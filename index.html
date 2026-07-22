@@ -5,29 +5,30 @@
   <title>이벤트 캘린더 대시보드</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; background-color: #0f172a; color: #f8fafc; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; background-color: #0f172a; color: #f8fafc; }
 
-    header { text-align: center; margin-bottom: 28px; }
-    h1 { font-size: 2rem; margin-bottom: 16px; color: #38bdf8; font-weight: 800; }
+    header { text-align: center; margin-bottom: 24px; }
+    h1 { font-size: 1.8rem; margin-bottom: 16px; color: #38bdf8; font-weight: 800; }
 
-    /* 네비게이션 / 월 선택 탭 */
+    /* 네비게이션 탭 */
     .nav-tabs {
       display: flex;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .tab-btn {
-      padding: 8px 16px;
+      padding: 6px 14px;
       border: 1px solid #334155;
       border-radius: 20px;
       background-color: #1e293b;
       color: #94a3b8;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.2s ease;
+      font-size: 0.85rem;
+      transition: all 0.2s;
     }
 
     .tab-btn:hover { background-color: #334155; color: #fff; }
@@ -35,130 +36,161 @@
     .tab-btn.all-view { background-color: #0d9488; color: #fff; border-color: #2dd4bf; }
     .tab-btn.all-view.active { background-color: #14b8a6; }
 
-    /* 컨테이너 및 섹션 스타일 */
     .section-title {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      margin: 32px 0 16px 0;
-      padding-bottom: 8px;
+      margin: 24px 0 12px 0;
+      padding-bottom: 6px;
       border-bottom: 2px solid #334155;
       color: #38bdf8;
     }
 
-    /* 일별 그리드 레이아웃 (대형 썸네일 강조) */
-    .day-grid {
+    /* === [월별 보기] 7개 그리드 한 줄 배치 === */
+    .day-grid.month-mode {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      max-width: 1600px;
-      margin: 0 auto 40px auto;
-    }
-
-    /* 날짜 카드 스타일 */
-    .day-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: repeat(7, 1fr); /* 정확히 7열 배치 */
       gap: 10px;
-      overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .day-card:hover {
-      transform: translateY(-4px);
-      border-color: #38bdf8;
+      max-width: 1400px;
+      margin: 0 auto 30px auto;
     }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .day-number {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f1f5f9;
-    }
-
-    /* 대형 썸네일 스타일 */
-    .thumbnail-box {
+    .day-grid.month-mode .photo-card {
+      position: relative;
       width: 100%;
-      height: 200px; /* 썸네일 크기 극대화 */
+      aspect-ratio: 1 / 1; /* 정사각형 비율 */
       border-radius: 8px;
-      background-color: #0f172a;
       background-size: cover;
       background-position: center;
+      background-color: #1e293b;
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid #334155;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .day-grid.month-mode .photo-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      z-index: 2;
+    }
+
+    /* 사진 내 텍스트 오버레이 (월별 보기 전용) */
+    .card-date {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(15, 23, 42, 0.75);
+      color: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      backdrop-filter: blur(2px);
+    }
+
+    .card-title {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #38bdf8;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      max-width: 85%;
+      text-align: right;
+      word-break: keep-all;
+      backdrop-filter: blur(2px);
+    }
+
+    /* === [12개월 전체 보기] 20개 그리드 한 줄 배치 === */
+    .day-grid.all-mode {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr); /* 정확히 20열 배치 */
+      gap: 4px;
+      max-width: 1800px;
+      margin: 0 auto 20px auto;
+    }
+
+    .day-grid.all-mode .photo-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 3px;
+      background-size: cover;
+      background-position: center;
+      background-color: #1e293b;
+      cursor: pointer;
+      transition: transform 0.15s, z-index 0.15s;
+    }
+
+    .day-grid.all-mode .photo-card:hover {
+      transform: scale(1.3);
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* 미상로드 텍스트 스타일 */
+    .no-img {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #64748b;
-      font-size: 0.85rem;
-      border: 1px dashed #334155;
+      height: 100%;
+      color: #475569;
+      font-size: 0.65rem;
     }
 
-    /* 실시간 이벤트 제목 입력창 */
-    .event-input {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
+    /* 화면 폭이 좁을 때 Responsive 조절 */
+    @media (max-width: 900px) {
+      .day-grid.month-mode { grid-template-columns: repeat(4, 1fr); }
+      .day-grid.all-mode { grid-template-columns: repeat(10, 1fr); }
     }
-    .event-input:focus {
-      border-color: #38bdf8;
-    }
-    .event-input::placeholder { color: #64748b; }
-
-    /* 파일 연결 버튼 */
-    .file-btn {
-      display: block;
-      padding: 6px 10px;
-      border-radius: 6px;
-      background-color: #334155;
-      color: #38bdf8;
-      text-align: center;
-      text-decoration: none;
-      font-size: 0.8rem;
-      font-weight: 600;
-      transition: background-color 0.2s;
-    }
-    .file-btn:hover { background-color: #0284c7; color: #fff; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>2026 이벤트 캘린더</h1>
-    <!-- 월 선택 탭 & 12개월 전체 보기 버튼 -->
+    <h1>보컬로이드 곡 캘린더</h1>
     <div class="nav-tabs" id="navTabs"></div>
   </header>
 
-  <!-- 그리드가 출력될 메인 영역 -->
   <main id="mainContainer"></main>
 
   <script>
-    // 1. 본인의 Cloudinary Cloud Name으로 지정해주세요!
+    // 1. 본인의 Cloudinary Cloud Name을 적어주세요.
     const CLOUD_NAME = 'dbrw8fjpv';
 
-    // 각 월별 일수 (평년 기준)
+    // 2. [날짜별 제목 설정]
+    const eventTitles = {
+      "1-1": "새해 첫날",
+      "2-14": "발렌타인데이",
+      "5-5": "어린이날",
+      "12-25": "크리스마스"
+    };
+
+    // 3. [날짜별 이동할 링크 URL 설정] (원하는 날짜와 URL 등록)
+    const eventLinks = {
+      "1-1": "https://naver.com",
+      "2-14": "https://google.com",
+      "12-25": "https://github.com"
+      // 등록하지 않은 날짜 클릭 시 기본 안내창 출력
+    };
+
+    // 4. [12개월 전체 보기용 월별 테두리 색상 (1~12월)]
+    const monthBorderColors = [
+      '#ef4444', '#f97316', '#f59e0b', '#10b981', 
+      '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', 
+      '#ec4899', '#f43f5e', '#14b8a6', '#84cc16'
+    ];
+
     const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    
-    // 현재 선택 모드: 1~12 (월별) 또는 'ALL' (12개월 전체 보기)
     let currentMode = 'ALL'; 
 
-    // 상단 탭 네비게이션 생성
     function renderTabs() {
       const tabsContainer = document.getElementById('navTabs');
       tabsContainer.innerHTML = '';
 
-      // 1월 ~ 12월 버튼
       for (let m = 1; m <= 12; m++) {
         const btn = document.createElement('button');
         btn.className = `tab-btn ${currentMode === m ? 'active' : ''}`;
@@ -171,7 +203,6 @@
         tabsContainer.appendChild(btn);
       }
 
-      // 마지막: 12개월 전체 보기 버튼
       const allBtn = document.createElement('button');
       allBtn.className = `tab-btn all-view ${currentMode === 'ALL' ? 'active' : ''}`;
       allBtn.innerText = '✨ 12개월 전체 보기';
@@ -183,97 +214,87 @@
       tabsContainer.appendChild(allBtn);
     }
 
-    // 메인 화면 렌더링 함수
     function renderView() {
       const container = document.getElementById('mainContainer');
       container.innerHTML = '';
 
       if (currentMode === 'ALL') {
-        // 12개월 전체를 순서대로 출력
-        for (let m = 1; m <= 12; m++) {
-          const sectionTitle = document.createElement('div');
-          sectionTitle.className = 'section-title';
-          sectionTitle.innerText = `📅 ${m}월`;
-          container.appendChild(sectionTitle);
+        // 12개월 전체 통합 모드 (20개씩 한 줄, 텍스트 없이 테두리 구분)
+        const allGrid = document.createElement('div');
+        allGrid.className = 'day-grid all-mode';
 
-          const grid = createDayGrid(m);
-          container.appendChild(grid);
+        for (let m = 1; m <= 12; m++) {
+          const totalDays = daysInMonth[m - 1];
+          const color = monthBorderColors[m - 1];
+
+          for (let d = 1; d <= totalDays; d++) {
+            const card = createCard(m, d, true, color);
+            allGrid.appendChild(card);
+          }
         }
+        container.appendChild(allGrid);
+
       } else {
-        // 선택한 개별 월만 출력
-        const grid = createDayGrid(currentMode);
+        // 개별 월 모드 (7개씩 한 줄, 날짜/제목 표시)
+        const grid = document.createElement('div');
+        grid.className = 'day-grid month-mode';
+
+        const totalDays = daysInMonth[currentMode - 1];
+        for (let d = 1; d <= totalDays; d++) {
+          const card = createCard(currentMode, d, false);
+          grid.appendChild(card);
+        }
         container.appendChild(grid);
       }
     }
 
-    // 특정 월의 일별 카드 그리드 생성
-    function createDayGrid(month) {
-      const grid = document.createElement('div');
-      grid.className = 'day-grid';
+    // 카드 생성 공통 함수
+    function createCard(month, day, isAllMode, color) {
+      const publicId = `cal-${month}-${day}`;
+      const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${publicId}`;
+      const titleKey = `${month}-${day}`;
+      const title = eventTitles[titleKey] || '';
+      const link = eventLinks[titleKey];
 
-      const totalDays = daysInMonth[month - 1];
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.style.backgroundImage = `url('${imageUrl}')`;
 
-      for (let d = 1; d <= totalDays; d++) {
-        // Cloudinary Public ID 생성 규칙 (cal-M-D 형식)
-        const publicId = `cal-${month}-${d}`;
-        const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${publicId}`;
-
-        // 저장된 제목 불러오기
-        const savedTitle = localStorage.getItem(`event_title_${month}_${d}`) || '';
-
-        const card = document.createElement('div');
-        card.className = 'day-card';
-
-        card.innerHTML = `
-          <div class="card-header">
-            <span class="day-number">${month}월 ${d}일</span>
-          </div>
-
-          <!-- 대형 썸네일 영역 -->
-          <div class="thumbnail-box" id="thumb-${month}-${d}" style="background-image: url('${imageUrl}');">
-          </div>
-
-          <!-- 제목 입력란 -->
-          <input type="text" 
-                 class="event-input" 
-                 placeholder="제목 입력..." 
-                 value="${savedTitle}"
-                 oninput="saveTitle(${month}, ${d}, this.value)">
-
-          <!-- 파일/링크 연결 버튼 -->
-          <a href="#" class="file-btn" onclick="openFile(${month}, ${d}); return false;">
-            🔗 상세 파일 보기
-          </a>
-        `;
-
-        grid.appendChild(card);
-
-        // 이미지 로딩 실패 예외 처리
-        const img = new Image();
-        img.src = imageUrl;
-        img.onerror = () => {
-          const box = document.getElementById(`thumb-${month}-${d}`);
-          if (box) {
-            box.style.backgroundImage = 'none';
-            box.innerHTML = '<span>이미지 준비중</span>';
-          }
-        };
+      // 전체 보기 모드일 때 월별 테두리 색상 적용
+      if (isAllMode) {
+        card.style.border = `2px solid ${color}`;
+        card.title = `${month}월 ${day}일 ${title ? '- ' + title : ''}`; // 마우스 호버 시 날짜 툴팁
+      } else {
+        // 월별 보기 모드일 때만 날짜/제목 오버레이 노출
+        let innerHTML = `<div class="card-date">${month}.${day}</div>`;
+        if (title) {
+          innerHTML += `<div class="card-title">${title}</div>`;
+        }
+        card.innerHTML = innerHTML;
       }
 
-      return grid;
+      // 이미지 예외 처리
+      const img = new Image();
+      img.src = imageUrl;
+      img.onerror = () => {
+        card.style.backgroundImage = 'none';
+        if (!isAllMode) {
+          card.innerHTML += `<div class="no-img">사진 없음</div>`;
+        }
+      };
+
+      // 클릭 시 해당 날짜에 연결된 URL로 이동
+      card.onclick = () => {
+        if (link) {
+          window.location.href = link;
+        } else {
+          alert(`${month}월 ${day}일: 연결된 링크가 없습니다.`);
+        }
+      };
+
+      return card;
     }
 
-    // 이벤트 제목 자동 저장 함수 (LocalStorage)
-    function saveTitle(month, day, text) {
-      localStorage.setItem(`event_title_${month}_${day}`, text);
-    }
-
-    // 파일/상세 페이지 연동 예시 함수
-    function openFile(month, day) {
-      alert(`${month}월 ${day}일 연결 페이지/파일로 이동합니다.`);
-    }
-
-    // 초기화
     window.onload = () => {
       renderTabs();
       renderView();
