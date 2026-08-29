@@ -298,7 +298,7 @@
     // 카드 생성 공통 함수
     function createCard(month, day, isAllMode, color) {
       const publicId = `cal-${month}-${day}`;
-      const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v1/${publicId}`;
+      const imageUrl = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto/v1/${publicId}.png`;
       const titleKey = `${month}-${day}`;
       const title = eventTitles[titleKey] || '';
       const link = eventLinks[titleKey];
